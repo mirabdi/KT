@@ -178,12 +178,26 @@ class AdaptiveMonotonicAttention(nn.Module):
         gamma = self.gammas
         if gamma is not None and self.adaptive_decay and concept_reps is not None:
             # concept_reps: (B, L) prior counts -> dampens decay rate for well-practiced items
-            # Shape for broadcasting: (B, 1, L, 1)
             damping = (1.0 / (1.0 + torch.log1p(concept_reps.float()))).unsqueeze(1).unsqueeze(-1)
-            # Modulate gamma per query position
-            # Use base monotonic attention with broadcastable gamma if feasible,
-            # or apply standard monotonic decay
-            out, attn = monotonic_attention(q, k, v, allowed, gamma, self.dropout, zero_pad)
+            d_k = q.size(-1)
+            scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(d_k)
+            neg = -1e32 if scores.dtype == torch.float32 else torch.finfo(scores.dtype).min
+            with torch.no_grad():
+                s_ = scores.float().masked_fill(~allowed, -1e32).softmax(dim=-1) * allowed
+                dist_cum = torch.cumsum(s_, dim=-1)
+                dist_total = s_.sum(dim=-1, keepdim=True)
+                idx = torch.arange(L, device=scores.device)
+                pe = (idx[None, :] - idx[:, None]).abs().to(torch.float32)
+                dist = ((dist_total - dist_cum) * pe).clamp_(min=0.0).sqrt_()
+            theta = -F.softplus(gamma.float()).unsqueeze(0) * damping
+            total_effect = (dist * theta).exp().clamp(min=1e-5, max=1e5)
+            scores = (scores * total_effect.to(scores.dtype)).masked_fill(~allowed, neg)
+            attn = F.softmax(scores, dim=-1)
+            if zero_pad:
+                keep = torch.ones(L, 1, device=attn.device, dtype=attn.dtype)
+                keep[0] = 0
+                attn = attn * keep
+            out = torch.matmul(self.dropout(attn), v)
         else:
             out, attn = monotonic_attention(q, k, v, allowed, gamma, self.dropout, zero_pad)
 
@@ -511,7 +525,8 @@ class CogKT(BaseKTModel):
         if self.use_slip_guess:
             s = torch.sigmoid(self.slip_param) * 0.25   # max slip 25%
             c = torch.sigmoid(self.guess_param) * 0.35  # max guess 35%
-            # Store in extras for calibrated evaluation if needed
+            probs = c + (1.0 - s - c) * torch.sigmoid(logits)
+            logits = torch.logit(probs.clamp(1e-6, 1.0 - 1e-6))
             extras["slip"] = s.item()
             extras["guess"] = c.item()
 

@@ -1,0 +1,127 @@
+\documentclass[10.5pt,a4paper]{article}
+\usepackage[margin=0.72in,top=0.65in,bottom=0.65in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\renewcommand{\ttdefault}{cmtt}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!75!black,
+    citecolor=blue!75!black,
+    urlcolor=blue!75!black
+}
+
+% Clean section styling
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{\z@}%
+  {-1.8ex \@plus -0.5ex \@minus -.2ex}%
+  {0.6ex \@plus .2ex}%
+  {\normalfont\large\bfseries\color{blue!80!black}}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+  {-1.2ex \@plus -0.4ex \@minus -.2ex}%
+  {0.4ex \@plus .2ex}%
+  {\normalfont\normalsize\bfseries\color{black}}}
+\makeatother
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3.5pt plus 0.5pt minus 0.5pt}
+
+\begin{document}
+
+% Header Block
+\begin{center}
+    {\Large \textbf{Graduation Thesis Outline \& Review Feedback Guide}}\\[3pt]
+    {\large \textbf{SynapseKT: Dual-Process Cognitive Modeling and 2PL Psychometrics\\for Attentive Knowledge Tracing}}\\[4pt]
+    \textbf{Candidate:} Amirbek Abdirasulov \quad$|$ \quad \textbf{Supervisor:} Prof. Yeon-Chang Lee\\
+    \textbf{Date:} October 31, 2026 \quad$|$ \quad \textbf{Milestone:} End-of-October Full Thesis Draft\\
+    \textbf{Project Repository \& Reproducibility:} \url{https://github.com/mirabdi/KT}
+\end{center}
+
+\vspace{-6pt}
+\hrule height 0.8pt
+\vspace{6pt}
+
+\section{1. Topic Refinement \& Academic Rationale}
+\textbf{Initial Agreed Topic:} \textit{Knowledge-Graph-Guided Dynamic Learning Path Recommendation} (curriculum subgraph path prediction).
+
+\textbf{Rationale for Refinement to Deep Knowledge Tracing (KT):}
+\begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parskip}{0pt}\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}
+    \item \textbf{Offline Evaluation \& Benchmarking Bottleneck:} Dynamic path recommendation formulated as graph path prediction lacks standardized, reproducible offline evaluation benchmarks. Without continuous, long-term live deployments with human learner cohorts, evaluating whether a path recommendation is truly ``optimal'' relies on circular simulation heuristics and synthetic assumptions that cannot be objectively verified.
+    \item \textbf{Prerequisite Cognitive Engine:} In personalized education, Knowledge Tracing is the core foundational predictive engine that underpins any dynamic path recommendation: an intelligent system cannot reliably adapt a learning trajectory without first accurately tracing student mastery and cognitive decay across concepts.
+    \item \textbf{Empirical Rigor \& Standardized Benchmarks:} Knowledge Tracing features rigorous, globally recognized public benchmark datasets (e.g., ASSISTments, Algebra2005, NIPS34, Statics2011) with verifiable chronological response logs, enabling strict 5-fold student cross-validation and reproducible scientific evaluation.
+\end{itemize}
+
+\section{2. Thesis Structure \& Technical Summary of SynapseKT}
+The full thesis draft is compiled in \texttt{papers/synapsekt/main.pdf} (ACL preprint format, 10 pages). It consists of seven structured sections:
+
+\subsection{Sections 1--2: Problem Formulation \& The Sequence Modeling Dilemma}
+Online KT estimates sequential performance $\hat{r}_t = P(r_t = 1 \mid q_t, c_t, \mathcal{H}_{t-1})$ under strict causal constraints. We identify two core theoretical flaws across existing architectures:
+\begin{enumerate}\setlength{\itemsep}{1.5pt}\setlength{\parskip}{0pt}\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}
+    \item \textbf{Momentum vs. Retrieval Dilemma:} Recurrent models (DKT, CKT) capture short-term streaks but compress history into a single vector, causing catastrophic forgetting on long histories. Transformers (SAKT, AKT, simpleKT) perform content-addressable historical retrieval but suffer from \textit{attention dilution} on dense histories ($T > 500$), losing sensitivity to immediate momentum and fatigue.
+    \item \textbf{The Psychometric Gap:} Free dense question embeddings overfit long-tail items, while 1PL Rasch models assign only a single scalar difficulty ($\mu_q$), ignoring that questions differ fundamentally in diagnostic discrimination power ($\alpha_q$).
+\end{enumerate}
+
+\subsection{Section 3: The SynapseKT Cognitive Architecture}
+Drawing on dual-process cognitive psychology (Baddeley working memory + Ebbinghaus long-term memory), SynapseKT introduces:
+\begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parskip}{0pt}\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}
+    \item \textbf{2PL-Rasch Item Projections:} Jointly parameterizes item difficulty $\mu_q \in \mathbb{R}$ and bounded item discrimination $\alpha_q = 2\sigma(\nu_q) \in (0, 2)$ with empirical Bayes $L_2$ shrinkage ($\mathcal{R}_{\text{2PL}} = \lambda_\mu \sum \mu_q^2 + \lambda_\alpha \sum \nu_q^2$), preventing tail overfitting while sharpening diagnostic signal.
+    \item \textbf{Stream A (Multi-Scale Working Memory):} Receptive field bank of causal 1D depthwise convolutions ($K \in \{3, 5, 7\}$) with Gated Linear Units (GLUs) over right-shifted past interactions, capturing session momentum and local streaks without state drift.
+    \item \textbf{Stream B (Adaptive Monotonic Attention):} Queries long-term curriculum mastery with an \textbf{Adaptive Ebbinghaus Consolidation Kernel}. The forgetting decay rate $\theta_{h, t} = \text{Softplus}(\gamma_h) / (1 + \log(1 + N_{c_t, <t}))$ dynamically flattens as concept practice count $N_{c_t, <t}$ increases, modeling the cognitive \textit{spacing effect}.
+    \item \textbf{Learned Cognitive Confidence Gate:} A feature-wise soft multiplexer $\mathbf{g}_t \in (0, 1)^D$ that dynamically balances working memory momentum against long-term concept recall.
+\end{itemize}
+
+\subsection{Sections 4--5: Benchmark Evaluation \& Empirical Breakthroughs}
+Evaluated across \textbf{6 standard benchmarks} against \textbf{19 competitive baselines} under strict 5-fold student cross-validation on our standardized \texttt{ktbench} framework (Table~\ref{tab:summary_perf}):
+\begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parskip}{0pt}\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}
+    \item \textbf{Longitudinal Tutoring Breakthrough:} SynapseKT achieves \textbf{0.8200 AUC} on ASSISTments2017—a \textbf{+5.28\% leap} over the strongest prior attentive model (AKT-R, 0.7672), overcoming attention smearing on long trajectories ($L=551$).
+    \item \textbf{State-of-the-Art Dominance:} Establishes top AUC across ASSISTments2009 (\textbf{0.8384}), ASSISTments2015 (\textbf{0.7857}), and NIPS34 (\textbf{0.7896}), while scaling gracefully to extreme catalogs (Algebra2005: 173k items, \textbf{0.9187 AUC}).
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Model Architecture} & \textbf{ASSIST2009} & \textbf{ASSIST2015} & \textbf{ASSIST2017} & \textbf{Algebra2005} & \textbf{NIPS34} & \textbf{Statics2011} \\
+\midrule
+\textbf{SynapseKT (Ours)} & \textbf{0.8384 $\pm$ 0.004} & \textbf{0.7857 $\pm$ 0.002} & \textbf{0.8200 $\pm$ 0.004} & \underline{0.9187 $\pm$ 0.007} & \textbf{0.7896 $\pm$ 0.001} & \underline{0.8270 $\pm$ 0.004} \\
+\textsc{AKT-R} & \underline{0.8361 $\pm$ 0.004} & --- & 0.7672 $\pm$ 0.004 & 0.9167 $\pm$ 0.009 & 0.6661 $\pm$ 0.081 & --- \\
+\textsc{DKT-R} / \textsc{DKT+} & 0.8189 $\pm$ 0.004 & 0.7322 $\pm$ 0.002 & 0.7606 $\pm$ 0.004 & 0.9183 $\pm$ 0.000 & 0.7889 $\pm$ 0.000 & \textbf{0.8294 $\pm$ 0.004} \\
+\textsc{DKVMN-R} & 0.8247 $\pm$ 0.004 & 0.7273 $\pm$ 0.002 & 0.7572 $\pm$ 0.003 & 0.9185 $\pm$ 0.000 & \underline{0.7891 $\pm$ 0.000} & 0.8215 $\pm$ 0.004 \\
+\textsc{simpleKT} & 0.7549 & 0.6997 & 0.7087 & 0.8838 & 0.7826 & 0.6446 \\
+\bottomrule
+\end{tabular}
+\caption{Test AUC comparison across standard educational benchmarks (5-fold student cross-validation).}
+\label{tab:summary_perf}
+\end{table}
+
+\subsection{Sections 6--7: Ablation Analysis, Hardware Profiling \& Deployment}
+\begin{itemize}\setlength{\itemsep}{1.5pt}\setlength{\parskip}{0pt}\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}
+    \item \textbf{Ablation Matrix (15 Variants):} Removing working memory (\texttt{-NoWM}) causes a steep \textbf{$-1.46\%$ AUC drop} (0.7969 to 0.7823), verifying that local momentum and long-term retrieval provide complementary signals.
+    \item \textbf{Edge \& Hardware Efficiency:} Peak unified memory is bounded at \textbf{2.04 GB} on Apple Silicon with \textbf{3.82 ms} single-step latency, satisfying real-time ITS SLAs ($<10$ ms).
+\end{itemize}
+
+\section{3. Summary of Deliverables Submitted}
+\begin{enumerate}\setlength{\itemsep}{1.5pt}\setlength{\parskip}{0pt}\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}
+    \item \textbf{Full Graduation Thesis Draft:} \texttt{papers/synapsekt/main.pdf} (Complete research manuscript, ACL style).
+    \item \textbf{Comprehensive Survey Report (1-Credit Internship):} \texttt{papers/kt\_survey/main.pdf} (13-page extensive survey and empirical benchmark across 6 KT paradigms, 20 architectures, and 390 runs).
+    \item \textbf{Open-Source Codebase:} Hosted at \url{https://github.com/mirabdi/KT} with modular PyTorch models, data loaders, evaluation pipelines, and test suites.
+\end{enumerate}
+
+\section{4. Targeted Points for Supervisor Review \& Feedback}
+To optimize your review time, I would welcome your thoughts on four specific aspects:
+\begin{enumerate}\setlength{\itemsep}{2pt}\setlength{\parskip}{0pt}\setlength{\topsep}{0pt}\setlength{\partopsep}{0pt}
+    \item \textbf{Topic Refinement Approval:} Does grounding the thesis in foundational Knowledge Tracing—enabling reproducible empirical evaluation across 6 benchmarks—satisfy your expectations for the graduation thesis and internship scope?
+    \item \textbf{2PL Psychometric Formalism:} In Section 3.1, 2PL discrimination is bounded as $\alpha_q = 2\sigma(\nu_q)$ with empirical Bayes shrinkage. Do you recommend incorporating additional psychometric comparisons (e.g., multidimensional IRT)?
+    \item \textbf{Bridge to Downstream Recommendation:} Section 7 describes how SynapseKT's calibrated mastery logits serve as the input state for adaptive curriculum path selection. Would you recommend expanding this into a concrete downstream recommendation case study in the thesis, or keeping the focus strictly on sequence modeling?
+    \item \textbf{Final Draft Priorities (Late Nov -- Early Dec):} What specific theoretical or empirical aspects should be prioritized as I refine the manuscript toward the final submission?
+\end{enumerate}
+
+\end{document}

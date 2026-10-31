@@ -1,0 +1,38 @@
+{
+  "test": {
+    "auc": 0.755444605519012,
+    "rmse": 0.4305528719317086,
+    "acc": 0.725863908725273,
+    "mae": 0.3612173655891148,
+    "bce": 0.552541210908483,
+    "n": 60915,
+    "loss": 0.5525411994568988
+  },
+  "valid": {
+    "auc": 0.7540147167333692,
+    "rmse": 0.4227316773533289,
+    "acc": 0.7406984334203656,
+    "mae": 0.35208214968515866,
+    "bce": 0.5366855951611795,
+    "n": 61280,
+    "loss": 0.5366855949708127
+  },
+  "best_epoch": 3,
+  "data": {
+    "name": "assist2009_pid",
+    "n_concepts": 110,
+    "n_questions": 16891,
+    "has_timestamps": true,
+    "n_students": 4151,
+    "n_interactions": 325637,
+    "max_seq_len": 200,
+    "has_questions": true,
+    "train_sequences": 2994,
+    "train_interactions": 203442,
+    "valid_sequences": 974,
+    "valid_interactions": 61280,
+    "test_sequences": 950,
+    "test_interactions": 60915
+  },
+  "oom_events": 0
+}

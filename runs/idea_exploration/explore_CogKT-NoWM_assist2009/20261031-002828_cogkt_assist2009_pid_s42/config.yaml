@@ -1,0 +1,58 @@
+name: explore_CogKT-NoWM_assist2009
+seed: 42
+device: auto
+output_dir: runs/idea_exploration
+data:
+  adapter: akt_legacy
+  adapter_params:
+    dataset_name: assist2009_pid
+    data_dir: data/assist2009_pid
+    with_questions: true
+  split:
+  - 0.7
+  - 0.1
+  - 0.2
+  max_seq_len: 200
+  window_stride: null
+  min_seq_len: 2
+  num_workers: 0
+  length_bucketing: true
+model:
+  name: cogkt
+  params:
+    d_model: 128
+    d_ff: 512
+    n_heads: 8
+    n_blocks: 1
+    dropout: 0.05
+    use_rasch: true
+    use_2pl: true
+    use_working_memory: false
+    monotonic: true
+    adaptive_decay: true
+    context_aware: true
+train:
+  epochs: 3
+  batch_size: 64
+  optimizer: adam
+  lr: 0.001
+  weight_decay: 0.0
+  grad_clip: 0.0
+  loss_reduction: sum
+  patience: 10
+  monitor: auc
+  log_every: 0
+  compile: false
+  save_checkpoints: true
+memory:
+  memory_cap_gb: 11.0
+  enforce_cap: true
+  safety_factor: 0.75
+  auto_budget: true
+  cost_budget: null
+  max_micro_batch: 256
+  oom_retry: true
+  max_oom_retries: 6
+  empty_cache_each_epoch: true
+  amp: false
+  amp_dtype: bfloat16

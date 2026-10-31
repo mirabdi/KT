@@ -1,0 +1,38 @@
+{
+  "test": {
+    "auc": 0.7381601549661083,
+    "rmse": 0.4561232123068204,
+    "acc": 0.6778088904445222,
+    "mae": 0.3984101902661564,
+    "bce": 0.6044117876723075,
+    "n": 11428,
+    "loss": 0.6044117610772506
+  },
+  "valid": {
+    "auc": 0.7475290137661992,
+    "rmse": 0.4535614438742129,
+    "acc": 0.6880436636534197,
+    "mae": 0.39577182294216634,
+    "bce": 0.6003965580985257,
+    "n": 5863,
+    "loss": 0.600396533844395
+  },
+  "best_epoch": 8,
+  "data": {
+    "name": "synthetic_rasch",
+    "n_concepts": 20,
+    "n_questions": 400,
+    "has_timestamps": true,
+    "n_students": 500,
+    "n_interactions": 55392,
+    "max_seq_len": 200,
+    "has_questions": true,
+    "train_sequences": 350,
+    "train_interactions": 38101,
+    "valid_sequences": 50,
+    "valid_interactions": 5863,
+    "test_sequences": 100,
+    "test_interactions": 11428
+  },
+  "oom_events": 0
+}

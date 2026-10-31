@@ -1,0 +1,38 @@
+{
+  "test": {
+    "auc": 0.6971767303745173,
+    "rmse": 0.4200407109288273,
+    "acc": 0.7452121763768893,
+    "mae": 0.35702375642176887,
+    "bce": 0.5303997016000317,
+    "n": 136231,
+    "loss": 0.5303996930840373
+  },
+  "valid": {
+    "auc": 0.702656354072964,
+    "rmse": 0.4183791795059385,
+    "acc": 0.7474916863257823,
+    "mae": 0.3544704154308716,
+    "bce": 0.5267510821527323,
+    "n": 140732,
+    "loss": 0.5267510737634974
+  },
+  "best_epoch": 3,
+  "data": {
+    "name": "assist2015",
+    "n_concepts": 100,
+    "n_questions": 0,
+    "has_timestamps": true,
+    "n_students": 19840,
+    "n_interactions": 683801,
+    "max_seq_len": 200,
+    "has_questions": false,
+    "train_sequences": 12022,
+    "train_interactions": 406838,
+    "valid_sequences": 4020,
+    "valid_interactions": 140732,
+    "test_sequences": 4002,
+    "test_interactions": 136231
+  },
+  "oom_events": 0
+}

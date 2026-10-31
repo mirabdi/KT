@@ -1,0 +1,38 @@
+{
+  "test": {
+    "auc": 0.7859197099361985,
+    "rmse": 0.43353399878190135,
+    "acc": 0.7141832799174317,
+    "mae": 0.38062488586768206,
+    "bce": 0.5531472513482961,
+    "n": 276135,
+    "loss": 0.5531472309155443
+  },
+  "valid": {
+    "auc": 0.7768723896128109,
+    "rmse": 0.43809827909002036,
+    "acc": 0.7070135645986213,
+    "mae": 0.38701755036897123,
+    "bce": 0.5627264872819099,
+    "n": 224850,
+    "loss": 0.5627264789753499
+  },
+  "best_epoch": 3,
+  "data": {
+    "name": "nips34",
+    "n_concepts": 57,
+    "n_questions": 948,
+    "has_timestamps": true,
+    "n_students": 4918,
+    "n_interactions": 1399520,
+    "max_seq_len": 200,
+    "has_questions": true,
+    "train_sequences": 6052,
+    "train_interactions": 898517,
+    "valid_sequences": 1506,
+    "valid_interactions": 224850,
+    "test_sequences": 1859,
+    "test_interactions": 276135
+  },
+  "oom_events": 0
+}

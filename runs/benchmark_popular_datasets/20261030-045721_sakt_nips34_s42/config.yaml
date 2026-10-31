@@ -1,0 +1,51 @@
+name: benchmark_popular_datasets
+seed: 42
+device: auto
+output_dir: runs
+data:
+  adapter: pykt
+  adapter_params:
+    data_dir: data/nips34
+    with_questions: true
+    name: nips34
+    fold: 1
+  split:
+  - 0.7
+  - 0.1
+  - 0.2
+  max_seq_len: 200
+  window_stride: null
+  min_seq_len: 2
+  num_workers: 0
+  length_bucketing: true
+model:
+  name: sakt
+  params:
+    d_model: 128
+    n_heads: 4
+    dropout: 0.2
+train:
+  epochs: 3
+  batch_size: 64
+  optimizer: adam
+  lr: 0.001
+  weight_decay: 0.0
+  grad_clip: 0.0
+  loss_reduction: sum
+  patience: 3
+  monitor: auc
+  log_every: 0
+  compile: false
+  save_checkpoints: true
+memory:
+  memory_cap_gb: 11.0
+  enforce_cap: true
+  safety_factor: 0.75
+  auto_budget: true
+  cost_budget: null
+  max_micro_batch: 256
+  oom_retry: true
+  max_oom_retries: 6
+  empty_cache_each_epoch: true
+  amp: false
+  amp_dtype: bfloat16

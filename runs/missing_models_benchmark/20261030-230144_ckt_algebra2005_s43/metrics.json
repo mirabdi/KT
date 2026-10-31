@@ -1,0 +1,38 @@
+{
+  "test": {
+    "auc": 0.909265160175862,
+    "rmse": 0.31601248330550596,
+    "acc": 0.859269762495569,
+    "mae": 0.20031938194594115,
+    "bce": 0.3138795300382192,
+    "n": 135408,
+    "loss": 0.31387952376127554
+  },
+  "valid": {
+    "auc": 0.9078279795355608,
+    "rmse": 0.3208849095688181,
+    "acc": 0.8537601257405393,
+    "mae": 0.20348401938748994,
+    "bce": 0.32100900930953263,
+    "n": 165420,
+    "loss": 0.3210090055155532
+  },
+  "best_epoch": 3,
+  "data": {
+    "name": "algebra2005",
+    "n_concepts": 112,
+    "n_questions": 173113,
+    "has_timestamps": true,
+    "n_students": 574,
+    "n_interactions": 884102,
+    "max_seq_len": 200,
+    "has_questions": true,
+    "train_sequences": 3110,
+    "train_interactions": 583272,
+    "valid_sequences": 870,
+    "valid_interactions": 165420,
+    "test_sequences": 733,
+    "test_interactions": 135408
+  },
+  "oom_events": 0
+}
