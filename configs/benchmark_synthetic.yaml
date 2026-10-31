@@ -1,0 +1,34 @@
+# Head-to-head benchmark: every model is trained on IDENTICAL splits of every dataset.
+# Run:  python -m ktbench benchmark -c configs/benchmark_synthetic.yaml
+name: benchmark_synthetic
+seeds: [42, 43]
+
+base:                    # shared ExperimentConfig fields
+  device: auto
+  output_dir: runs
+  train: {epochs: 20, batch_size: 32, lr: 1.0e-3, patience: 5}
+  memory: {memory_cap_gb: 11.0}
+
+datasets:                # name -> DataConfig fields
+  synthetic_rasch:       # has question ids -> AKT-R uses Rasch embeddings
+    adapter: synthetic
+    adapter_params: {n_students: 800, n_concepts: 20, n_questions: 400, max_len: 200, seed: 1}
+    max_seq_len: 200
+  synthetic_concepts:    # concept-only dataset -> AKT falls back to AKT-NR
+    adapter: synthetic
+    adapter_params: {n_students: 800, n_concepts: 30, n_questions: 300, max_len: 200, seed: 2, use_questions: false}
+    max_seq_len: 200
+
+models:                  # label -> {name, params, train(optional overrides)}
+  akt:
+    name: akt
+    params: {d_model: 128, d_ff: 512, n_heads: 8, dropout: 0.1}
+  akt_no_mono:           # ablation: no monotonic decay
+    name: akt
+    params: {d_model: 128, d_ff: 512, n_heads: 8, dropout: 0.1, monotonic: false}
+  dkt:
+    name: dkt
+    params: {emb_dim: 128, hidden_dim: 256}
+  sakt:
+    name: sakt
+    params: {d_model: 128, n_heads: 8}

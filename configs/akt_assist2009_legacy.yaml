@@ -1,0 +1,23 @@
+# Reproduce the paper setting on the original AKT data files.
+# Run: python -m ktbench train -c configs/akt_assist2009_legacy.yaml
+name: akt_assist2009
+seed: 224
+data:
+  adapter: akt_legacy
+  adapter_params:
+    dataset_name: assist2009_pid
+    data_dir: data/assist2009_pid
+    fold: 1
+    with_questions: true
+  max_seq_len: 200
+  min_seq_len: 1
+model:
+  name: akt
+  params: {d_model: 256, d_ff: 1024, n_heads: 8, n_blocks: 1, dropout: 0.05, kq_same: true, l2: 1.0e-5}
+train:
+  epochs: 15
+  batch_size: 24
+  lr: 1.0e-3
+  patience: 5
+memory:
+  memory_cap_gb: 11.0

@@ -1,0 +1,49 @@
+# AKT-R (Rasch) on the built-in synthetic dataset.
+# Run:  python -m ktbench train -c configs/akt_synthetic.yaml
+# Override anything from the CLI, e.g.:  train.epochs=5 model.params.d_model=128
+name: akt_synthetic
+seed: 42
+device: auto            # mps -> cuda -> cpu
+output_dir: runs
+
+data:
+  adapter: synthetic
+  adapter_params:
+    n_students: 1000
+    n_concepts: 20
+    n_questions: 400
+    max_len: 200
+  split: [0.7, 0.1, 0.2]
+  max_seq_len: 200      # sequence-length cap (memory lever #1 for O(L^2) attention)
+  length_bucketing: true
+
+model:
+  name: akt
+  params:               # paper / reference defaults
+    d_model: 256
+    n_blocks: 1
+    n_heads: 8
+    d_ff: 1024
+    dropout: 0.05
+    kq_same: true
+    final_fc_dim: 512
+    separate_qa: false
+    use_rasch: true
+    l2: 1.0e-5
+
+train:
+  epochs: 30
+  batch_size: 24        # logical batch; split into micro-batches automatically if needed
+  optimizer: adam
+  lr: 1.0e-4            # reference used 1e-5 for 300 epochs; 1e-4 converges much faster
+  grad_clip: 0.0
+  patience: 8
+  monitor: auc
+
+memory:
+  memory_cap_gb: 11.0   # 16 GB M3: leave ~5 GB for macOS
+  enforce_cap: true
+  safety_factor: 0.75
+  auto_budget: true
+  oom_retry: true
+  amp: false

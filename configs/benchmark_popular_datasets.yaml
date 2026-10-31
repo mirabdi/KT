@@ -1,0 +1,46 @@
+# Head-to-head benchmark on popular Knowledge Tracing datasets: Algebra2005 & NIPS34
+# Run: python -m ktbench benchmark -c configs/benchmark_popular_datasets.yaml
+name: benchmark_popular_datasets
+seeds: [42]
+folds: [1]
+
+base:
+  device: auto
+  output_dir: runs
+  train: {epochs: 3, batch_size: 64, lr: 1.0e-3, patience: 3}
+  memory: {memory_cap_gb: 11.0}
+
+datasets:
+  algebra2005:
+    adapter: pykt
+    adapter_params: {data_dir: data/algebra2005, with_questions: true}
+    max_seq_len: 200
+    min_seq_len: 2
+  nips34:
+    adapter: pykt
+    adapter_params: {data_dir: data/nips34, with_questions: true}
+    max_seq_len: 200
+    min_seq_len: 2
+
+models:
+  AKT-R:
+    name: akt
+    params: {d_model: 128, d_ff: 256, n_heads: 4, n_blocks: 1, dropout: 0.05, use_rasch: true, l2: 1.0e-5}
+  AKT-NR:
+    name: akt
+    params: {d_model: 128, d_ff: 256, n_heads: 4, n_blocks: 1, dropout: 0.05, use_rasch: false}
+  AKT-NoMono:
+    name: akt
+    params: {d_model: 128, d_ff: 256, n_heads: 4, n_blocks: 1, dropout: 0.05, monotonic: false, use_rasch: true}
+  DKT:
+    name: dkt
+    params: {emb_dim: 128, hidden_dim: 256, dropout: 0.2}
+  DKT+:
+    name: dktplus
+    params: {emb_dim: 128, hidden_dim: 256, dropout: 0.2, lambda_w1: 0.05, lambda_w2: 0.5}
+  DKVMN:
+    name: dkvmn
+    params: {memory_size: 30, key_dim: 32, value_dim: 64, dropout: 0.2}
+  SAKT:
+    name: sakt
+    params: {d_model: 128, n_heads: 4, dropout: 0.2}

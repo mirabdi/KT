@@ -1,0 +1,54 @@
+# Full replication of Table 2 from the KDD 2020 AKT paper:
+# "Context-Aware Attentive Knowledge Tracing" (Ghosh, Heffernan & Lan, 2020).
+# Run: python -m ktbench benchmark -c configs/benchmark_akt_paper.yaml
+name: akt_paper_table2
+seeds: [224]
+folds: [1, 2, 3, 4, 5]
+
+base:
+  device: auto
+  output_dir: runs
+  train: {epochs: 8, batch_size: 24, lr: 1.0e-3, grad_clip: 10.0, patience: 4}
+  memory: {memory_cap_gb: 11.0}
+
+datasets:
+  Statics2011:
+    adapter: akt_legacy
+    adapter_params: {dataset_name: statics, data_dir: data/statics, with_questions: false}
+    max_seq_len: 200
+    min_seq_len: 1
+  ASSISTments2009:
+    adapter: akt_legacy
+    adapter_params: {dataset_name: assist2009_pid, data_dir: data/assist2009_pid, with_questions: true}
+    max_seq_len: 200
+    min_seq_len: 1
+  ASSISTments2015:
+    adapter: akt_legacy
+    adapter_params: {dataset_name: assist2015, data_dir: data/assist2015, with_questions: false}
+    max_seq_len: 200
+    min_seq_len: 1
+  ASSISTments2017:
+    adapter: akt_legacy
+    adapter_params: {dataset_name: assist2017_pid, data_dir: data/assist2017_pid, with_questions: true}
+    max_seq_len: 200
+    min_seq_len: 1
+
+models:
+  DKT:
+    name: dkt
+    params: {emb_dim: 200, hidden_dim: 200, dropout: 0.2, use_rasch: false}
+  DKT+:
+    name: dktplus
+    params: {emb_dim: 200, hidden_dim: 200, dropout: 0.2, lambda_r: 0.1, lambda_w1: 0.003, lambda_w2: 3.0, use_rasch: false}
+  DKVMN:
+    name: dkvmn
+    params: {memory_size: 50, key_dim: 50, value_dim: 200, dropout: 0.2, use_rasch: false}
+  SAKT:
+    name: sakt
+    params: {d_model: 128, n_heads: 8, dropout: 0.2, use_rasch: false}
+  AKT-NR:
+    name: akt
+    params: {d_model: 256, d_ff: 1024, n_heads: 8, n_blocks: 1, dropout: 0.05, use_rasch: false}
+  AKT-R:
+    name: akt
+    params: {d_model: 256, d_ff: 1024, n_heads: 8, n_blocks: 1, dropout: 0.05, use_rasch: true, l2: 1.0e-5}

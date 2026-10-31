@@ -1,0 +1,48 @@
+# Replication of Table 3 (Context-Aware Encoders vs Raw Embeddings Ablation)
+# from the KDD 2020 AKT paper (Ghosh, Heffernan & Lan, 2020).
+# Run: python -m ktbench benchmark -c configs/ablation_context_table3.yaml
+name: akt_paper_table3_context
+seeds: [224]
+folds: [1, 2, 3, 4, 5]
+
+base:
+  device: auto
+  output_dir: runs
+  train: {epochs: 8, batch_size: 24, lr: 1.0e-3, grad_clip: 10.0, patience: 4}
+  memory: {memory_cap_gb: 11.0}
+
+datasets:
+  Statics2011:
+    adapter: akt_legacy
+    adapter_params: {dataset_name: statics, data_dir: data/statics, with_questions: false}
+    max_seq_len: 200
+    min_seq_len: 1
+  ASSISTments2009:
+    adapter: akt_legacy
+    adapter_params: {dataset_name: assist2009_pid, data_dir: data/assist2009_pid, with_questions: true}
+    max_seq_len: 200
+    min_seq_len: 1
+  ASSISTments2015:
+    adapter: akt_legacy
+    adapter_params: {dataset_name: assist2015, data_dir: data/assist2015, with_questions: false}
+    max_seq_len: 200
+    min_seq_len: 1
+  ASSISTments2017:
+    adapter: akt_legacy
+    adapter_params: {dataset_name: assist2017_pid, data_dir: data/assist2017_pid, with_questions: true}
+    max_seq_len: 200
+    min_seq_len: 1
+
+models:
+  AKT_raw-NR:
+    name: akt
+    params: {d_model: 256, d_ff: 1024, n_heads: 8, n_blocks: 1, dropout: 0.05, use_rasch: false, context_aware: false}
+  AKT-NR:
+    name: akt
+    params: {d_model: 256, d_ff: 1024, n_heads: 8, n_blocks: 1, dropout: 0.05, use_rasch: false, context_aware: true}
+  AKT_raw-R:
+    name: akt
+    params: {d_model: 256, d_ff: 1024, n_heads: 8, n_blocks: 1, dropout: 0.05, use_rasch: true, context_aware: false}
+  AKT-R:
+    name: akt
+    params: {d_model: 256, d_ff: 1024, n_heads: 8, n_blocks: 1, dropout: 0.05, use_rasch: true, context_aware: true}
